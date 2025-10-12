@@ -22,43 +22,18 @@ void Board::reset() {
 
 //Sinh ra 1 giá trị ngẫu nhiên trên bảng
 bool Board::spawnRandomTile() {
-	std::vector<std::pair<int, int>> emptyCells;
+	std::vector<std::pair<int, int>> empties;
 	for (int i = 0; i < SIZE; i++) {
 		for (int j = 0; j < SIZE; j++) {
-			if (grid[i][j].getValue() == 0) {
-				emptyCells.emplace_back(i, j);
+			if (grid[i][j].isEmpty()) {
+				empties.emplace_back(i, j);
 			}
 		}
 	}
 
-	if (emptyCells.empty()) return false;
-	//Sinh số ngẫu nhiên
-	std::uniform_int_distribution<> dist(0, (int)emptyCells.size() - 1);
-	std::pair<int, int> pos = emptyCells[dist(rng)];
-	int x = pos.first;
-	int y = pos.second;
-}
-
-bool Board::move(Direction dir) {
-	bool moved = false;
-	std::array<int, SIZE> tempRow;
-	for (auto& row : grid) {
-		for (auto& tile : row) {
-			tile.setMerged(false);
-		}
-	}
-	switch (dir) {
-	case Direction::LEFT:
-		for (int i = 0; i < SIZE; i++) {
-			for (int j = 0; j < SIZE; j++) {
-				tempRow[j] = grid[i][j].getValue();
-			}
-			moved |= moveRowLeft(tempRow);
-			for (int j = 0; j < SIZE; j++) {
-				grid[i][j].setValue(tempRow[j]);
-			}
-		}
-		break;
-	}
-			
+	if (empties.empty()) return false;
+	std::uniform_int_distribution<int> dist(0, (int)empties.size() - 1);
+	std::pair<int, int> pos = empties[dist(rng)];
+	int r = pos.first;
+	int c = pos.second;
 }

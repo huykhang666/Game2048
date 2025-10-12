@@ -19,9 +19,11 @@ public:
 	bool canMove();
 	bool move(Direction dir);
 	std::string toString() const;
+	void saveToFile(const std::string& filename) const;
+	bool loadFromFile(const std::string& filename);
 
 private:
 	std::mt19937 rng;
 	bool moveRowLeft(std::array<int, SIZE>& rowVals);
-	bool anyMergePossoble() const;
+	bool anyMergePossible() const;
 };

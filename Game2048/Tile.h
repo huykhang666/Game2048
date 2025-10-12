@@ -19,5 +19,10 @@ public:
 		if (value == 0) std::cout << " .";
 		else std::cout << std::setw(4) << value;
 	}
+
+	bool isEmpty() const {
+		return value == 0;
+	}
+
 	void update() override {};
 };
