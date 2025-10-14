@@ -71,12 +71,43 @@ bool Board::moveRowLeft(std::array<int, SIZE>& rowVals) {
 		if (rowVals[i] == 0) continue;
 		int j = i;
 
+		//Dời ô sang trái hết mức có thể
 		while (j > 0 && rowVals[j - 1] == 0) {
 			rowVals[j - 1] = rowVals[j];
 			rowVals[j] = 0;
 			j--;
 			moved = true;
 		}
+
+		//Gộp lại các giá trị
+		if (j > 0 && rowVals[j - 1] == rowVals[j] && lastMerge != j - 1) {
+			rowVals[j - 1] *= 2;
+			score += rowVals[j - 1];
+			lastMerge = j - 1;
+			moved = true;
+		}
 	}
-	
+	return moved;
+}
+
+//Xử lí di chuyển
+bool Board::move(Direction dir) {
+	bool moved = false;
+	std::array<int, SIZE> tempRow;
+
+	switch (dir) {
+	case Direction::LEFT:
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				tempRow[j] = grid[i][j].getValue();
+			}
+
+			moved |= moveRowLeft(tempRow);
+
+			for (int j = 0; j < SIZE; j++) {
+				grid[i][j].setValue(tempRow[j]);
+			}
+		}
+		break;
+	}
 }
