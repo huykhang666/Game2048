@@ -20,6 +20,16 @@ public:
 		else std::cout << std::setw(4) << value;
 	}
 
+    bool mergeWith(Tile& other ) {
+		if (value != 0 && value == other.value && !merged && !other.merged ) {
+			value *= 2;
+			merged = true;
+			other.setValue(0);
+			return true;
+		}
+		return false;
+	}
+			
 	bool isEmpty() const {
 		return value == 0;
 	}
