@@ -1,9 +1,9 @@
 # 🎄 2048 - Phiên bản Giáng Sinh 🎮  
 > Một dự án OOP & Cấu trúc dữ liệu bằng C++, mang không khí Giáng Sinh đến trò chơi kinh điển 2048!  
 
-![Main Menu]()
-![Gameplay](tại nền cho game 2048 phiên bản giáng sinh _ GIAO DIỆN 1 – MENU CHÍNH__Tổng thể___Title lớn ở trên (20%)__Danh sách nút chọn (60%)__Chữ hướng dẫn hoặc bản quyền (20%)__Chi tiết tỉ lệ___Khu vực_Tỷ lệ_Gợi ý p (1).jpg)
-![Game Over](end2048.jpg)
+![Main Menu](/images/start.jpg)
+![Gameplay](/images/main.jpg)
+![Game Over](end.jpg)
 
 ---
 
