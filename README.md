@@ -96,7 +96,7 @@ Phiên bản này được viết bằng **C++ hướng đối tượng**, chạ
 ---
 
 ## 👨‍💻 Tác giả
-**Nguyễn Huy Khang** – Sinh viên Công nghệ Thông tin, Trường Đại học Giao thông Vận tải – Phân hiệu TP.HCM (UTC2)  
+**Nguyễn Huy Khang - Trần Thảo Nương - Nguyễn Ngọc Ngà** – Sinh viên Công nghệ Thông tin, Trường Đại học Giao thông Vận tải – Phân hiệu TP.HCM (UTC2)  
 > "2048 Giáng Sinh – Bước đầu xây dựng game bằng C++ hướng đối tượng và hướng tới giao diện chuyên nghiệp hơn."
 
 ---
