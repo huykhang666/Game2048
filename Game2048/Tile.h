@@ -1,7 +1,8 @@
-﻿#pragma once;
+﻿#pragma once
 #include "GameObjects.h"
 #include <iomanip>
 #include<iostream>
+#include<SFML/Graphics.hpp>
 
 //Quản lí 1 ô vuông trong bàn chơi
 class Tile : public GameObject {
@@ -15,13 +16,10 @@ public:
 	bool isMerged() const { return merged; }
 	void setMerged(bool m) { merged = m; }
 
-	void render() const override {
-		if (value == 0) std::cout << " .";
-		else std::cout << std::setw(4) << value;
-	}
+	void render() const override {}
 
-    bool mergeWith(Tile& other ) {
-		if (value != 0 && value == other.value && !merged && !other.merged ) {
+	bool mergeWith(Tile& other) {
+		if (value != 0 && value == other.value && !merged && !other.merged) {
 			value *= 2;
 			merged = true;
 			other.setValue(0);
@@ -29,7 +27,7 @@ public:
 		}
 		return false;
 	}
-			
+
 	bool isEmpty() const {
 		return value == 0;
 	}

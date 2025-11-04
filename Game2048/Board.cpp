@@ -8,6 +8,20 @@ Board::Board() : rng(std::random_device{}()), score(0) {
 	reset();
 }
 
+// Hàm hỗ trợ để nén các giá trị khác 0 về phía trái
+void Board::compressRow(std::array<int, Board::SIZE>& rowVals) {
+	int k = 0;
+	std::array<int, Board::SIZE> newRow = {};
+
+	// Nén các giá trị khác 0 về phía trái
+	for (int i = 0; i < Board::SIZE; i++) {
+		if (rowVals[i] != 0) {
+			newRow[k++] = rowVals[i];
+		}
+	}
+	rowVals = newRow;
+}
+
 //Reset giá trị các ô về 0 và tạo 2 ô có giá trị bất kì
 void Board::reset() {
 	for (auto& row : grid) {
@@ -39,7 +53,7 @@ bool Board::spawnRandomTile() {
 	int c = pos.second;
 
 	grid[r][c].setValue((rand() % 10 == 0) ? 4 : 2);
-	return true;	
+	return true;
 }
 
 //Kiểm tra còn có thể di chuyển được không, nếu không thì game over
@@ -64,34 +78,43 @@ bool Board::canMove() {
 	return false;
 }
 
-// Di chuyển hàng sang trái
+// Di chuyển hàng sang trái (Đã sửa)
 bool Board::moveRowLeft(std::array<int, SIZE>& rowVals) {
-	bool moved = false;
-	int lastMerge = -1;
+    bool moved = false;
+    std::array<int, SIZE> originalRow = rowVals; // Lưu trữ giá trị ban đầu để kiểm tra moved
 
-	for (int i = 1; i < SIZE; i++) {
-		if (rowVals[i] == 0) continue;
-		int j = i;
+    // BƯỚC 1: NÉN (Dời) các ô khác 0 sang trái
+    compressRow(rowVals);
 
-		//Dời ô sang trái hết mức có thể
-		while (j > 0 && rowVals[j - 1] == 0) {
-			rowVals[j - 1] = rowVals[j];
-			rowVals[j] = 0;
-			j--;
-			moved = true;
-		}
+    // BƯỚC 2: GỘP (Merge) các ô liền kề
+    for (int i = 0; i < SIZE - 1; i++) {
+        // Kiểm tra 2 ô liền kề có giống nhau không
+        if (rowVals[i] != 0 && rowVals[i] == rowVals[i + 1]) {
+            rowVals[i] *= 2;        // Gộp: Nhân đôi giá trị
+            score += rowVals[i];    // Cộng điểm
+            rowVals[i + 1] = 0;     // Đặt ô gộp thứ hai về 0 (để nó không gộp thêm lần nữa)
+            moved = true;
+        }
+    }
 
-		//Gộp lại các giá trị
-		if (j > 0 && rowVals[j - 1] == rowVals[j] && lastMerge != j - 1) {
-			rowVals[j - 1] *= 2;
-			score += rowVals[j - 1];
-			rowVals[j] = 0;
-			lastMerge = j - 1;
-			moved = true;
-		}
-	}
-	return moved;
+    // BƯỚC 3: NÉN (Dời) lần nữa sau khi gộp
+    compressRow(rowVals);
+
+    // Kiểm tra xem có di chuyển/thay đổi nào xảy ra không
+    // (Nếu không có gộp, ta so sánh mảng cuối cùng với mảng ban đầu)
+    if (!moved) {
+        for (int i = 0; i < SIZE; ++i) {
+            if (originalRow[i] != rowVals[i]) {
+                moved = true; // Chỉ dời vị trí cũng tính là moved
+                break;
+            }
+        }
+    }
+
+    return moved;
 }
+
+
 
 //Xử lí di chuyển
 bool Board::move(Direction dir) {
@@ -150,7 +173,7 @@ bool Board::move(Direction dir) {
 			moved |= moveRowLeft(tempRow);
 
 			for (int i = 0; i < SIZE; i++) {
-				grid[i][j].setValue(tempRow[i]);
+				grid[SIZE - 1 - i][j].setValue(tempRow[i]);
 			}
 		}
 		break;

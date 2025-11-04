@@ -26,4 +26,5 @@ private:
 	std::mt19937 rng;
 	bool moveRowLeft(std::array<int, SIZE>& rowVals);
 	bool anyMergePossible() const;
+	void compressRow(std::array<int, SIZE>& rowVals);
 };
