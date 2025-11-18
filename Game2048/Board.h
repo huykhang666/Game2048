@@ -2,6 +2,7 @@
 #include <array>
 #include<random>
 #include<string>
+#include<fstream>
 #include "Tile.h"
 #include "Utils.h"
 
