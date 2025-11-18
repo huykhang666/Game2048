@@ -523,6 +523,28 @@ void Game::renderGameOver() {
 	}
 }
 
+void Game::renderWin() {
+    // Vẽ tiêu đề "YOU WIN!"
+    sf::Text winText;
+    drawTitle(winText, WINDOW_HEIGHT * 0.25f, "YOU WIN!", 80, 8.f);
+    winText.setFillColor(sf::Color::Yellow);
+    m_window.draw(winText);
+
+    // Vẽ điểm
+    m_scoreText.setString("YOUR SCORE: " + std::to_string(board.score));
+    m_bestText.setString("BEST: " + std::to_string(m_bestScore));
+    m_scoreText.setOrigin(m_scoreText.getLocalBounds().width / 2, m_scoreText.getLocalBounds().height / 2);
+    m_bestText.setOrigin(m_bestText.getLocalBounds().width / 2, m_bestText.getLocalBounds().height / 2);
+    m_window.draw(m_scoreText);
+    m_window.draw(m_bestText);
+
+	// Vẽ nút 
+    for (const auto& btn : gameOverButtons) {
+        m_window.draw(btn.shape);
+        m_window.draw(btn.text);
+    }
+}
+
 // === HÀM VẼ TỪNG Ô ===
 void Game::drawTile(const Tile& tile, float x, float y, float size) {
 	int value = tile.getValue();
