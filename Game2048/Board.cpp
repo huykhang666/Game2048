@@ -56,6 +56,18 @@ bool Board::spawnRandomTile() {
 	return true;
 }
 
+//Kiểm tra điều kiện thắng
+bool Board::hasWon() const {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (grid[i][j].getValue() >= 2048) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 //Kiểm tra còn có thể di chuyển được không, nếu không thì game over
 bool Board::canMove() {
 	//Kiểm tra các ô trống
