@@ -14,10 +14,53 @@ Game::Game()
 	: state(GameState::MENU), m_bestScore(0),
 	m_window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2048 Christmas", sf::Style::Close)
 {
+	std::srand(static_cast<unsigned int>(std::time(0)));
+	// --- TẢI VÀ CÀI ĐẶT ÂM THANH ---
+	if (!backgroundMusic.openFromFile("nhacNen2048.ogg")) {
+		std::cerr << "ERROR: Failed to load nhacNen2048.ogg\n";
+
+	}
+	else {
+		backgroundMusic.setLoop(true); 
+		backgroundMusic.setVolume(20);
+	}
+
+	if (moveBuffer.loadFromFile("click.wav")) {
+		moveSound.setBuffer(moveBuffer);
+		moveSound.setVolume(50);
+	}
+	else {
+		std::cerr << "ERROR: Failed to load click.wav\n";
+	}
+
+	if (mergeBuffer.loadFromFile("merge_2.wav")) {
+		mergeSound.setBuffer(mergeBuffer);
+		mergeSound.setVolume(80);
+	}
+	else {
+		std::cerr << "ERROR: Failed to load merge_2.wav\n";
+	}
+
+	if (gameOverBuffer.loadFromFile("game_over.wav")) {
+		gameOverSound.setBuffer(gameOverBuffer);
+		gameOverSound.setVolume(300); 
+	}
+	else {
+		std::cerr << "ERROR: Failed to load game_over.wav\n";
+	}
+
+	// --- KHỞI TẠO TUYẾT RƠI ---
+	m_snowflakes.resize(NUM_SNOWFLAKES);
+	for (auto& snowflake : m_snowflakes) {
+		initSnowflake(snowflake);
+	}
+
 	m_window.setFramerateLimit(60);
 	setupTileColors();
 	loadAssets();
 	setupUI();
+
+
 }
 
 // Hàm hỗ trợ đặt thuộc tính Text
@@ -69,7 +112,6 @@ void Game::setupTileColors() {
 	m_tileColors[1024] = sf::Color(178, 255, 102); // Xanh lá Chanh
 	m_tileColors[2048] = sf::Color(255, 255, 102); // Vàng rực
 
-	// Màu cho các ô lớn hơn
 	m_tileColors[4096] = sf::Color(60, 58, 50);
 	m_tileColors[8192] = sf::Color(0, 0, 0);
 }
@@ -127,13 +169,13 @@ void Game::setupUI() {
 	std::string overNames[] = { "Play Again", "Menu", "Exit Game" };
 	setupButtons(gameOverButtons, overTypes, overNames, 3, WINDOW_HEIGHT * 0.5f);
 
-	// 5. Nút Playing (New Game và Exit ở cuối màn hình)
+	// 5. Nút Playing 
 	ButtonType playingTypes[] = { ButtonType::NEW_GAME, ButtonType::EXIT };
 	std::string playingNames[] = { "New Game", "Exit" };
 
-	// *THAY ĐỔI*: Kích thước nhỏ hơn cho nút Playing (ví dụ: chỉ rộng 35% cửa sổ)
+
 	float smallButtonWidth = WINDOW_WIDTH * 0.25f;
-	float smallButtonHeight = 50.f; // Giảm chiều cao
+	float smallButtonHeight = 50.f; 
 
 	// Cần khai báo hàm setupSmallButton hoặc sửa lại logic setupButton
 	auto setupSmallButton = [&](UIButton& btn, float xPos, float yPos, const std::string& textStr, ButtonType type, const sf::Font& font) {
@@ -176,12 +218,12 @@ void Game::setupUI() {
 	// 7. Text Score và Best Score cho màn hình PLAYING - THIẾT LẬP MỚI
 
 	// Tọa độ trung tâm (X, Y) của khung SCORE và BEST
-	float scoreCenterY = WINDOW_HEIGHT * 0.2f; // Đặt khung Score ở vị trí 15% chiều cao
-	float scoreCenterX_Left = WINDOW_WIDTH * 0.25f; // 25% là trung tâm khung Score
-	float scoreCenterX_Right = WINDOW_WIDTH * 0.75f; // 75% là trung tâm khung Best
+	float scoreCenterY = WINDOW_HEIGHT * 0.2f; 
+	float scoreCenterX_Left = WINDOW_WIDTH * 0.25f; 
+	float scoreCenterX_Right = WINDOW_WIDTH * 0.75f;
 
 	// Kích thước của khung nền
-	float backgroundWidth = WINDOW_WIDTH * 0.33f; // Tăng chiều rộng để chứa chữ
+	float backgroundWidth = WINDOW_WIDTH * 0.4f; // Tăng chiều rộng để chứa chữ
 	float backgroundHeight = 60.f;
 
 	// MÀU XANH ĐẬM CHO KHUNG NỀN
@@ -253,17 +295,37 @@ void Game::processButtonClick(ButtonType type) {
 	case ButtonType::PLAY_AGAIN:
 		board.reset();
 		state = GameState::PLAYING;
+
+		// BỔ SUNG: Bật nhạc nền khi bắt đầu/chơi lại
+		if (backgroundMusic.getStatus() == sf::Music::Paused) {
+			backgroundMusic.play();
+		}
 		break;
+
 	case ButtonType::LOAD:
-		if (board.loadFromFile("save.txt")) state = GameState::PLAYING;
+		if (board.loadFromFile("save.txt")) {
+			state = GameState::PLAYING;
+
+			// BỔ SUNG: Bật nhạc nền khi Load Game thành công
+			if (backgroundMusic.getStatus() == sf::Music::Paused) {
+				backgroundMusic.play();
+			}
+		}
 		else { /* Thêm thông báo lỗi Load SFML */ }
 		break;
+
 	case ButtonType::EXIT:
 	case ButtonType::EXIT_GAME:
 		state = GameState::EXIT;
 		break;
+
 	case ButtonType::BACK_TO_MENU:
 		state = GameState::MENU;
+
+		// BỔ SUNG: Bật nhạc nền khi quay lại Menu
+		if (backgroundMusic.getStatus() == sf::Music::Paused) {
+			backgroundMusic.play();
+		}
 		break;
 	}
 }
@@ -293,7 +355,33 @@ void Game::processEvents() {
 	while (m_window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed) state = GameState::EXIT;
 
-		// Xử lý Input Bàn phím khi đang chơi
+		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+
+			sf::Vector2f mousePos = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window));
+
+			// Hàm xử lý chung cho mọi nút
+			auto processClickAndSound = [&](std::vector<UIButton>& buttons) {
+				for (auto& btn : buttons) {
+					if (btn.shape.getGlobalBounds().contains(mousePos)) {
+						processButtonClick(btn.type);
+						moveSound.play();
+						return;
+					}
+				}
+				};
+
+			if (state == GameState::MENU) {
+				processClickAndSound(menuButtons);
+			}
+			else if (state == GameState::PLAYING) {
+				processClickAndSound(playingButtons);
+			}
+			else if (state == GameState::GAME_OVER) {
+				processClickAndSound(gameOverButtons);
+			}
+		}
+
+		// --- BƯỚC 2: XỬ LÝ INPUT BÀN PHÍM (Key Pressed) ---
 		if (state == GameState::PLAYING && event.type == sf::Event::KeyPressed) {
 			Direction dir = Direction::NONE;
 			switch (event.key.code) {
@@ -302,38 +390,37 @@ void Game::processEvents() {
 			case sf::Keyboard::Down: case sf::Keyboard::S: dir = Direction::DOWN; break;
 			case sf::Keyboard::Right: case sf::Keyboard::D: dir = Direction::RIGHT; break;
 			case sf::Keyboard::L: board.saveToFile("save.txt"); break;
+			case sf::Keyboard::Q: state = GameState::EXIT; break;
 			default: break;
 			}
 
 			if (dir != Direction::NONE) {
-				if (board.move(dir)) {
-				}
-				if (!board.canMove()) {
-					state = GameState::GAME_OVER;
-				}
-			}
-		}
 
-		// Xử lý Click chuột cho các nút
-		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			if (state == GameState::MENU) {
-				for (auto& btn : menuButtons) if (isMouseOver(btn.shape)) processButtonClick(btn.type);
-			}
-			else if (state == GameState::PLAYING) {
-				for (auto& btn : playingButtons) if (isMouseOver(btn.shape)) processButtonClick(btn.type);
-			}
-			else if (state == GameState::GAME_OVER) {
-				for (auto& btn : gameOverButtons) if (isMouseOver(btn.shape)) processButtonClick(btn.type);
+				if (board.move(dir)) {
+					// Phát âm thanh MERGE cho TẤT CẢ các di chuyển hợp lệ
+					mergeSound.play();
+
+					board.spawnRandomTile();
+
+					// KIỂM TRA GAME OVER SAU KHI DI CHUYỂN
+					if (!board.canMove()) {
+						state = GameState::GAME_OVER;
+						backgroundMusic.pause();
+						gameOverSound.play();
+					}
+				}
 			}
 		}
 	}
-
 	// Xử lý Hiệu ứng Rê chuột
 	updateButtonHover();
 }
 
 //Hàm run game chạy đến khi ấn exit
 void Game::run() {
+	backgroundMusic.play();
+	if (moveSound.getStatus() == sf::Sound::Playing) moveSound.stop();
+	if (mergeSound.getStatus() == sf::Sound::Playing) mergeSound.stop();
 	while (m_window.isOpen()) {
 		processEvents();
 		m_window.clear();
@@ -392,6 +479,20 @@ void Game::renderGame() {
 	for (const auto& btn : playingButtons) {
 		m_window.draw(btn.shape);
 		m_window.draw(btn.text);
+	}
+
+	// --- VẼ VÀ CẬP NHẬT TUYẾT RƠI ---
+	for (auto& snowflake : m_snowflakes) {
+		// Di chuyển bông tuyết xuống
+		snowflake.shape.move(0, snowflake.speed);
+
+		// Nếu bông tuyết ra khỏi màn hình, khởi tạo lại từ trên
+		if (snowflake.shape.getPosition().y > WINDOW_HEIGHT) {
+			initSnowflake(snowflake);
+			// Đặt lại vị trí Y ở phía trên màn hình một chút để không bị giật
+			snowflake.shape.setPosition(snowflake.shape.getPosition().x, -snowflake.shape.getRadius());
+		}
+		m_window.draw(snowflake.shape);
 	}
 }
 
@@ -452,4 +553,17 @@ void Game::drawTile(const Tile& tile, float x, float y, float size) {
 
 		m_window.draw(text);
 	}
+}
+
+//Hiệu ứng tuyết rơi
+void Game::initSnowflake(Snowflake& snowflake) {
+	float randomX = static_cast<float>(rand() % WINDOW_WIDTH);
+	float randomY = static_cast<float>(rand() % (WINDOW_HEIGHT + 100)) - 100;
+
+	float randomSize = MIN_SNOW_SIZE + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (MAX_SNOW_SIZE - MIN_SNOW_SIZE)));
+	snowflake.speed = MIN_SNOW_SPEED + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (MAX_SNOW_SPEED - MIN_SNOW_SPEED)));
+
+	snowflake.shape.setRadius(randomSize);
+	snowflake.shape.setFillColor(sf::Color::White);
+	snowflake.shape.setPosition(randomX, randomY);
 }

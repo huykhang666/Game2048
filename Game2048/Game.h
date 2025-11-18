@@ -5,6 +5,13 @@
 #include<SFML/Graphics.hpp>
 #include<map>
 #include<vector>
+#include <SFML/Audio.hpp> 
+
+// Struct đại diện cho một bông tuyết
+struct Snowflake {
+	sf::CircleShape shape;
+	float speed;
+};
 
 // Enum để quản lý các thành phần UI (Mở rộng)
 enum class ButtonType {
@@ -27,7 +34,14 @@ private:
 	sf::Sprite m_backgroundSprite;
 
 	
-
+	// Âm Thanh
+	sf::Music backgroundMusic;
+	sf::SoundBuffer moveBuffer;
+	sf::Sound moveSound;        
+	sf::SoundBuffer mergeBuffer;
+	sf::Sound mergeSound;  
+	sf::SoundBuffer gameOverBuffer; 
+    sf::Sound gameOverSound;
 
 
 	// Text cho các màn hình
@@ -51,6 +65,14 @@ private:
 	sf::RectangleShape m_scoreBackground;
 	sf::RectangleShape m_bestBackground;
 
+
+	// --- HIỆU ỨNG TUYẾT RƠI ---
+	std::vector<Snowflake> m_snowflakes;
+	const int NUM_SNOWFLAKES = 200; // Số lượng bông tuyết
+	const float MIN_SNOW_SPEED = 1.0f;
+	const float MAX_SNOW_SPEED = 3.0f;
+	const float MIN_SNOW_SIZE = 1.0f;
+	const float MAX_SNOW_SIZE = 3.0f;
 public:
 	Game();
 	void run();
@@ -86,5 +108,5 @@ private:
 	void drawTile(const Tile& tile, float x, float y, float size);
 	void drawTitle(sf::Text& textObj, float y, const std::string& str, int size, float outline);
 
-
+	void initSnowflake(Snowflake& snowflake);
 };
