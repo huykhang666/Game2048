@@ -2,7 +2,7 @@
 #include<algorithm>
 #include<sstream>
 #include<fstream>
-
+#include <iomanip>
 //Constructor
 Board::Board() : rng(std::random_device{}()), score(0) {
 	reset();
