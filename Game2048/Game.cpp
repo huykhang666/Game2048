@@ -595,3 +595,8 @@ void Game::initSnowflake(Snowflake& snowflake) {
 	snowflake.shape.setFillColor(sf::Color::White);
 	snowflake.shape.setPosition(randomX, randomY);
 }
+
+Game::~Game() {
+    if (backgroundMusic.getStatus() == sf::Music::Playing)
+        backgroundMusic.stop();
+}
