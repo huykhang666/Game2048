@@ -22,6 +22,7 @@ public:
 	std::string toString() const;
 	void saveToFile(const std::string& filename) const;
 	bool loadFromFile(const std::string& filename);
+	bool hasWon() const;
 
 private:
 	std::mt19937 rng;
