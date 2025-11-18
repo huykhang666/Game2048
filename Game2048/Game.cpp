@@ -435,6 +435,7 @@ void Game::run() {
 		case GameState::MENU: renderMenu(); break;
 		case GameState::PLAYING: renderGame(); break;
 		case GameState::GAME_OVER: renderGameOver(); break;
+		case GameState::WIN: renderWin(); break;
 		case GameState::EXIT: m_window.close(); break;
 		default: break;
 		}
