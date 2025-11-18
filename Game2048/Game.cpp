@@ -402,8 +402,13 @@ void Game::processEvents() {
 
 					board.spawnRandomTile();
 
+					//Kiểm tra thắng
+					if (board.hasWon()) {
+            			state = GameState::WIN;  // Cần thêm GameState::WIN
+            			backgroundMusic.pause();
+        			}
 					// KIỂM TRA GAME OVER SAU KHI DI CHUYỂN
-					if (!board.canMove()) {
+					 else if (!board.canMove()) {
 						state = GameState::GAME_OVER;
 						backgroundMusic.pause();
 						gameOverSound.play();
