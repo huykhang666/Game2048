@@ -17,12 +17,12 @@ public:
 	Board();
 	void reset();
 	bool spawnRandomTile();
+	bool hasWon() const;
 	bool canMove();
 	bool move(Direction dir);
 	std::string toString() const;
 	void saveToFile(const std::string& filename) const;
 	bool loadFromFile(const std::string& filename);
-	bool hasWon() const;
 
 private:
 	std::mt19937 rng;
