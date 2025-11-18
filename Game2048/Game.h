@@ -109,4 +109,6 @@ private:
 	void drawTitle(sf::Text& textObj, float y, const std::string& str, int size, float outline);
 
 	void initSnowflake(Snowflake& snowflake);
+	~Game() ;
+
 };
