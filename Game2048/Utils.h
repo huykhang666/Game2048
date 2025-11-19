@@ -8,7 +8,7 @@ enum class Direction {
 
 //Enum trạng thái game
 enum class GameState {
-	MENU, PLAYING, GAME_OVER, EXIT
+	MENU, PLAYING, GAME_OVER, WIN, EXIT
 };
 
 //Union: dữ liệu đa kiểu
