@@ -99,6 +99,7 @@ private:
 	void renderMenu();
 	void renderGame();
 	void renderGameOver();
+	void renderWin();
 	void processEvents();
 
 	// Hàm hỗ trợ
