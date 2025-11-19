@@ -52,6 +52,7 @@ bool Board::spawnRandomTile() {
 	int r = pos.first;
 	int c = pos.second;
 
+	std::uniform_int_distribution<int> distVal(0, 9);
 	grid[r][c].setValue((rand() % 10 == 0) ? 4 : 2);
 	return true;
 }
@@ -79,15 +80,19 @@ bool Board::canMove() {
 		}
 	}
 
-	//Kiểm tra các ô có thể gộp được
-	for (int i = 0; i < SIZE; i++) {
-		for (int j = 0; j < SIZE - 1; j++) {
-			if (grid[i][j].getValue() == grid[i][j + 1].getValue() ||
-				grid[j][i].getValue() == grid[j + 1][i].getValue())
-				return true;
-		}
-	}
-	return false;
+	return anyMergePossible();
+}
+//Kiểm tra các ô có thể gộp được
+bool Board::anyMergePossible() const {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE - 1; j++) {
+            if (grid[i][j].getValue() == grid[i][j + 1].getValue() ||
+                grid[j][i].getValue() == grid[j + 1][i].getValue()) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 // Di chuyển hàng sang trái (Đã sửa)
