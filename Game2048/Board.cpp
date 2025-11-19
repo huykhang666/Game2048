@@ -48,11 +48,11 @@ bool Board::spawnRandomTile() {
 
 	if (empties.empty()) return false;
 	std::uniform_int_distribution<int> dist(0, (int)empties.size() - 1);
-	std::pair<int, int> pos = empties[dist(rng)];
+	std::uniform_int_distribution<int> distVal(0, 9);
+	auto pos = empties[distPos(rng)];
 	int r = pos.first;
 	int c = pos.second;
 
-	std::uniform_int_distribution<int> distVal(0, 9);
 	grid[r][c].setValue((rand() % 10 == 0) ? 4 : 2);
 	return true;
 }
