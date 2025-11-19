@@ -47,13 +47,13 @@ bool Board::spawnRandomTile() {
 	}
 
 	if (empties.empty()) return false;
-	std::uniform_int_distribution<int> dist(0, (int)empties.size() - 1);
+	std::uniform_int_distribution<int> distPos(0, (int)empties.size() - 1);
 	std::uniform_int_distribution<int> distVal(0, 9);
 	auto pos = empties[distPos(rng)];
 	int r = pos.first;
 	int c = pos.second;
-
-	grid[r][c].setValue((rand() % 10 == 0) ? 4 : 2);
+	//Điều khiển quy tắc sinh ô mới
+	grid[r][c].setValue(distVal(rng) == 0 ? 4 : 2); 
 	return true;
 }
 
@@ -84,14 +84,14 @@ bool Board::canMove() {
 }
 //Kiểm tra các ô có thể gộp được
 bool Board::anyMergePossible() const {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE - 1; j++) {
-            if (grid[i][j].getValue() == grid[i][j + 1].getValue() ||
-                grid[j][i].getValue() == grid[j + 1][i].getValue()) {
-                return true;
-            }
-        }
-    }
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE - 1; j++)
+            if (grid[i][j].getValue() == grid[i][j+1].getValue()) return true;
+
+    for (int i = 0; i < SIZE - 1; i++)
+        for (int j = 0; j < SIZE; j++)
+            if (grid[i][j].getValue() == grid[i+1][j].getValue()) return true;
+
     return false;
 }
 
