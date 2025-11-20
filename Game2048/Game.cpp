@@ -22,7 +22,7 @@ Game::Game()
 	}
 	else {
 		backgroundMusic.setLoop(true); 
-		backgroundMusic.setVolume(20);
+		backgroundMusic.setVolume(100);
 	}
 
 	if (moveBuffer.loadFromFile("click.wav")) {
@@ -584,7 +584,7 @@ void Game::drawTile(const Tile& tile, float x, float y, float size) {
 }
 
 //Hiệu ứng tuyết rơi
-void Game::initSnowflake(Snowflake& snowflake) {
+void Game::initSnowflake(Snowflake& snowflake)   {
 	float randomX = static_cast<float>(rand() % WINDOW_WIDTH);
 	float randomY = static_cast<float>(rand() % (WINDOW_HEIGHT + 100)) - 100;
 
